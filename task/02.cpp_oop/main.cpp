@@ -1,3 +1,5 @@
+/* Example of C++ with more or less correct OOP,
+ * of course it can be even better */
 
 #ifdef WIN32
 # include <winsock.h>
@@ -31,6 +33,7 @@ private:
 
 };
 
+/* not only device has its own class but at least address has it as well */
 struct address {
     address() = delete;
     explicit address( const uint8_t upper_addr, const uint8_t lower_addr ):
@@ -42,8 +45,11 @@ struct address {
     uint8_t lower_part;
 };
 
+/* map of known memory cells */
 namespace addresses {
 
+/* good, all addresses easy to check on code review,
+ * but still no checks for data size */
 static const address power_on( 0x00, 0x00 );
 static const address hello( 0x10, 0xA0 );
 static const address ready( 0xAA, 0xFF );
@@ -75,6 +81,7 @@ public:
         return ( connection_write( m_conn, addr.upper_part, addr.lower_part, &local_value, sizeof( uint16_t ) ) >= 0 );
     }
 
+    /* small improvement of read functions, better than before */
     std::optional< uint8_t > read8( const address addr ) {
         uint16_t local_value;
         if( connection_read( m_conn, addr.upper_part, addr.lower_part, &local_value, sizeof( uint8_t ) ) >= 0 )

@@ -1,3 +1,4 @@
+/* Example how C developers can try to improve example with using C++ as C with classes */
 
 #ifdef WIN32
 # include <winsock.h>
@@ -14,6 +15,7 @@ extern "C" {
 #include <api.h>
 }
 
+/* special exception */
 class connection_exception: public std::exception {
 public:
     connection_exception() = delete;
@@ -31,6 +33,7 @@ private:
 
 };
 
+/* class for communication with devices */
 class device {
 public:
     device() = delete;
@@ -45,12 +48,17 @@ public:
             connection_close( m_conn );
     }
 
+    /* set of function to write different data:
+     *      write8/16 and read8/16,
+     * but still no mapping between memory in the device and size of data there */
+
     bool write8( const uint8_t upper_addr, const uint8_t lower_addr, const uint8_t value ) {
         uint8_t local_value = value;
         return ( connection_write( m_conn, upper_addr, lower_addr, &local_value, sizeof( uint8_t ) ) >= 0 );
     }
 
     bool write16( const uint8_t upper_addr, const uint8_t lower_addr, const uint16_t value ) {
+        /* better than C, host-to-network translation is executed in one place */
         uint16_t local_value = htons( value );
         return ( connection_write( m_conn, upper_addr, lower_addr, &local_value, sizeof( uint16_t ) ) >= 0 );
     }
@@ -64,6 +72,7 @@ public:
         if( connection_read( m_conn, upper_addr, lower_addr, &local_value, sizeof( uint16_t ) ) < 0 )
             return false;
 
+        /* better than C, host-to-network translation is executed in one place */
         value = ntohs( local_value );
         return true;
     }
@@ -75,6 +84,7 @@ private:
 };
 
 
+/* some modern C++ */
 std::optional< std::string > device1_task() {
     static const uint8_t dev_id = 1;
 
@@ -86,6 +96,7 @@ std::optional< std::string > device1_task() {
         return std::string( ex.what() );
     }
 
+    /* in common it is not really better that pure C */
     uint8_t power_on = 0xFD;
     if( !dev_conn->write8( 0x00, 0x00, power_on ) )
         return std::string( "cannot send command to power on" );
