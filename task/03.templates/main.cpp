@@ -51,8 +51,8 @@ struct address {
 namespace addresses {
 
 static const address< 0x00, 0x00, uint8_t >  power_on( 0xFD );
-static const address< 0x00, 0x00, uint16_t > hello;
-static const address< 0x00, 0x00, uint8_t >  ready;
+static const address< 0x10, 0xA0, uint16_t > hello;
+static const address< 0xAA, 0xFF, uint8_t >  ready;
 
 }
 
